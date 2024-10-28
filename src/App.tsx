@@ -6,56 +6,28 @@ const client = generateClient<Schema>();
 
 function App() {
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
-  const [content, setContent] = useState(""); // Estado para o conteúdo do Todo
-  const [isDone, setIsDone] = useState(false); // Estado para o status do Todo
 
   useEffect(() => {
-    const subscription = client.models.Todo.observeQuery().subscribe({
+    client.models.Todo.observeQuery().subscribe({
       next: (data) => setTodos([...data.items]),
     });
-
-    // Limpar a assinatura ao desmontar o componente
-    return () => subscription.unsubscribe();
   }, []);
 
   function createTodo() {
-    if (!content) return; // Verifica se o conteúdo não está vazio
+    client.models.Todo.create({ content: window.prompt("Todo content") });
+  }
 
-    client.models.Todo.create({ 
-      content: content,
-      isDone: isDone // Utiliza o estado do checkbox
-    });
-
-    // Limpa os campos após a criação do Todo
-    setContent("");
-    setIsDone(false);
+  function deleteTodo(id: string) {
+    client.models.Todo.delete({ id })
   }
 
   return (
     <main>
       <h1>Minha Lista</h1>
-      <div>
-        <input 
-          type="text" 
-          placeholder="Todo content" 
-          value={content} 
-          onChange={(e) => setContent(e.target.value)} 
-        />
-        <label>
-          <input 
-            type="checkbox" 
-            checked={isDone} 
-            onChange={(e) => setIsDone(e.target.checked)} 
-          />
-          Concluído
-        </label>
-        <button onClick={createTodo}>+ Novo Todo</button>
-      </div>
+      <button onClick={createTodo}>+ new</button>
       <ul>
         {todos.map((todo) => (
-          <li key={todo.id}>
-            {todo.content} - <strong>{todo.isDone ? 'Concluído' : 'Não Concluído'}</strong>
-          </li>
+          <li onClick={() => deleteTodo(todo.id)} key={todo.id}>{todo.content}</li>
         ))}
       </ul>
       <div>
