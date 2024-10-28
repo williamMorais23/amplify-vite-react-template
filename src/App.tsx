@@ -15,7 +15,7 @@ function App() {
 
   function createTodo() {
     const content = window.prompt("Todo content");
-    const isCompleted = window.confirm("Is this Todo completed?");
+    const isCompleted = window.prompt("Is this Todo completed?");
 
     client.models.Todo.create({ 
       content: content,
