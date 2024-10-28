@@ -14,7 +14,13 @@ function App() {
   }, []);
 
   function createTodo() {
-    client.models.Todo.create({ content: window.prompt("Todo content") });
+    const content = window.prompt("Todo content");
+    const isCompleted = window.confirm("Is this Todo completed?");
+
+    client.models.Todo.create({ 
+      content: content,
+      isDone: isCompleted
+    });
   }
 
   return (
